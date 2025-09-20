@@ -20,29 +20,25 @@
         </div>
     {% endif %}
 
-    <form method="POST">
+    <form action="{% url 'newpass' %}" method="POST">
         {% csrf_token %}
         <!-- Email -->
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" placeholder="Enter email" required>
-        </div>
+       
 
         <!-- Password -->
         <div class="mb-3">
             <label class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+            <input type="password" name="npassword" class="form-control" placeholder="Enter password" required>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-         <div class="mb-2">
-             <a href="{% url 'fpass' %}">Forgot password?</a>
+        <div class="mb-3">
+            <label class="form-label">Confirm - Password</label>
+            <input type="password" name="cpassword" class="form-control" placeholder="Enter Confirm password" required>
         </div>
+
+        <button type="submit" class="btn btn-primary w-100">Change Password</button>
     </form>
-
-    <p class="text-center mt-3">
-        Don’t have an account? <a href="{% url 'signup' %}">Sign Up</a>
-    </p>
+>
 </div>
 
 </body>

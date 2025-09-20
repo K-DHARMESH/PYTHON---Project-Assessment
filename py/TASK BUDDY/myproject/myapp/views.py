@@ -6,6 +6,7 @@ from django.utils.timezone import now
 from django.shortcuts import redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.conf import settings
+import random
 
 def index(request):
     user_id = request.session.get('user_id')
@@ -104,6 +105,76 @@ def signup(request):
         return render(request, 'signup.html')
     
     
+
+def fpass(request):
+    if request.method == "POST":
+        email = request.POST.get('email')  
+        if email: 
+            try:
+                user = User.objects.get(email=email)
+                otp = random.randint(1001, 9999)
+                subject = 'OTP FOR Forgot Password'
+                message = f'Hi {user.name}, your OTP is: {otp}'
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = [user.email]
+                send_mail(subject, message, email_from, recipient_list)
+                request.session['email'] = user.email
+                request.session['otp'] = otp
+                return render(request, 'otp.html')
+            
+            except User.DoesNotExist:
+                msg = "Email does not exist!"
+                return render(request, 'fpass.html', {'msg': msg})
+        else:
+            msg = "Please enter your email!"
+            return render(request, 'fpass.html', {'msg': msg})
+
+    return render(request, 'fpass.html')
+  
+ 
+def otp(request):
+    if request.method == "POST":
+        try:
+                
+            otp = int(request.session['otp'])
+            uotp = int(request.POST['uotp'])
+
+            if otp == uotp:
+                request.session.pop('otp',None)
+                return render(request, 'newpass.html')
+            else:
+                msg = "otp does not match !!"
+                return render(request, 'otp.html',{'msg':msg})
+            
+        except User.DoesNotExist:
+            pass
+
+    else:
+        return render(request, 'otp.html')
+ 
+  
+  
+def newpass(request):
+    if request.method == "POST":
+        user = User.objects.get(email=request.session['email'])
+        
+        try:
+            if request.POST['npassword'] == request.POST['cpassword']:
+                user.password = request.POST['npassword']
+                user.save()
+                
+                return redirect('login')
+                
+            else:
+                msg  = "password and confirm password does not match !!"  
+                return render(request, 'newpass.html', {'msg':msg})
+            
+        except User.DoesNotExist:
+            return render(request, 'newpass.html')
+    else:
+        return render(request, 'newpass.html')     
+
+ 
 
 def logout(request):
     request.session.pop('email',None)
