@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskBuddy - Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-light">
+
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="bg-dark text-white p-3 vh-100" style="width: 250px;">
+        <h4 class="mb-4">TaskBuddy</h4>
+        <ul class="nav flex-column">
+            {% comment %} <p>DEBUG: {{ request.session.selection }}</p> {% endcomment %}
+            {% if request.session.selection == "admin" %}
+            <li class="nav-item mb-2"><a href="{% url 'admindash' %}" class="nav-link text-white"> <i class="fa fa-home"></i>Admin Panel</a></li>
+            <li class="nav-item mb-2"><a href="{% url 'all_tasks' %}" class="nav-link text-white"></i>All User Tasks</a></li>
+            <li class="nav-item mt-4"><a href="{% url 'logout' %}" class="btn btn-danger w-100">Logout</a></li>
+            <li class="nav-item mb-2"><a href="{% url 'profile' %}" class="nav-link text-white"><i class="fa fa-user"></i> Profile</a></li>
+            {% else %}
+            <li class="nav-item mb-2"><a href="{% url 'index' %}" class="nav-link text-white"><i class="fa fa-home"></i> Dashboard</a></li>
+            <li class="nav-item mb-2"><a href="{% url 'mytask' %}" class="nav-link text-white"><i class="fa fa-tasks"></i> My Tasks</a></li>
+            <li class="nav-item mb-2"><a href="{% url 'team_tasks'%}" class="nav-link text-white"><i class="fa fa-users"></i> Team Tasks</a></li>
+            <li class="nav-item mb-2"><a href="{% url 'profile' %}" class="nav-link text-white"><i class="fa fa-user"></i> Profile</a></li>
+            <li class="nav-item mt-4"><a href="{% url 'logout' %}" class="btn btn-danger w-100">Logout</a></li>
+             {% endif %}
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid p-4">
+        <h3 class="mb-4">Welcome, {{ myuser.name }} 👋</h3>
+
+        <!-- Task Overview Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center p-3">
+                    <h5>Pending Tasks</h5>
+                    <p class="display-6 text-warning">{{ pending }}</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center p-3">
+                    <h5>Completed</h5>
+                    <p class="display-6 text-success">{{ completed }}</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center p-3">
+                    <h5>Overdue</h5>
+                    <p class="display-6 text-danger">{{ overdue }}</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center p-3">
+                    <h5>Assigned to Me</h5>
+                    <p class="display-6 text-primary">{{ assigned }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Table -->
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">My Tasks</h5>
+                <a href="{% url 'task' %}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Task</a>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in tasks %}
+                        <tr>
+                            <td>{{ t.title }}</td>
+                            <td>
+                                {% if t.priority == "High" %}
+                                    <span class="badge bg-danger">High</span>
+                                {% elif t.priority == "Medium" %}
+                                    <span class="badge bg-primary">Medium</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Low</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if t.status == "Pending" %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif t.status == "Completed" %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Overdue</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ t.due_date|date:"d-M-Y" }}</td>
+                            <td>
+                                {% if t.status != "Completed" %}
+                                    <a href="{% url 'taskcomplate' t.id %}" class="btn btn-success btn-sm"><i class="fa fa-check"></i></a>
+                                {% endif %}
+                                <a href="{% url 'taskedit' t.id %}" class="btn btn-info btn-sm"><i class="fa fa-edit"></i></a>
+                                <a href="{% url 'taskdelete' t.id %}" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No tasks available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

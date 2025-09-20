@@ -1,0 +1,45 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+}
+
+.card {
+    border: none;
+}
+
+.card h3 {
+    font-weight: bold;
+    color: #333;
+}
+
+.btn-primary {
+    background: #4a6cf7;
+    border: none;
+}
+.btn-primary:hover {
+    background: #3652d9;
+}
+
+.nav-link {
+    font-size: 16px;
+}
+
+.nav-link:hover {
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+
+.card {
+  border-radius: 15px;
+}
+
+.rounded-circle {
+  object-fit: cover;
+  border: 3px solid #ddd;
+}
